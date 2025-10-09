@@ -64,6 +64,7 @@ def calculate_average_body_mass_species(penguins):
     Input: csv_file(string)
     Output: avg_body_mass_dict(dictionary)
     '''
+    
     data = {}
     for row in penguins: 
         island = row['island']
@@ -85,12 +86,17 @@ def calculate_average_body_mass_species(penguins):
     for island, species_dict in data.items(): 
         for species, masses in species_dict.items(): 
             avg_mass = sum(masses) / len(masses)
-            avg_body_mass_dict[(island, species)] = avg_mass
+            avg_body_mass_dict[(island, species)] = avg_mass #calculation 1 - calculating the average mass for each species 
 
             if avg_mass > highest_avg_mass:
-                highest_avg_mass = avg_mass
-                heaviest_species_island = (island, species)
+                highest_avg_mass = avg_mass #calculation 2 - calculating the highest average mass with associated species 
+                heaviest_species_island = (island, species) 
+    print(f"The average mass for (island, species) is: {avg_body_mass_dict}")
+    print(f"The species with the highest average mass is: {heaviest_species_island} with a mass of {highest_avg_mass:.2f}g") 
     return avg_body_mass_dict, heaviest_species_island, highest_avg_mass
+
+    
+
 
 def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
     '''
@@ -126,8 +132,7 @@ def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_r
 
 def main(): 
     penguins = load_penguin('penguins.csv')
-    result = calculate_average_body_mass_species(penguins)
-    print(result)
+    calculate_average_body_mass_species(penguins)
 
 if __name__ == "__main__": 
     main() 
