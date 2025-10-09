@@ -51,13 +51,13 @@ def get_measurements(penguins, measurements):
     return values
 
 
-def calculate_heaviest_species(penguins): 
+def calculate_average_body_mass_species(penguins): 
+    '''
+    Grouping the body masses by species and island and finding the averages of each (island, species)
+    Input: csv_file(string)
+    Output: avg_body_mass_dict(dictionary)
+    '''
     data = {}
-    '''
-    Grouping the body masses by species and island 
-    Input: penguins(list of dictionaries)
-    # Output: penguins(list of dictionaries)
-    '''
     for row in penguins: 
         island = row['island']
         species = row['species']
@@ -71,21 +71,39 @@ def calculate_heaviest_species(penguins):
             data[island][species] = [] 
 
         data[island][species].append(body_mass)
-    '''
-    Finding the averages of each (island, species)
-    # Input: csv_file(string)
-    Output: list_tups(tuple)
-    '''
-    list_tups = [] 
+
+    avg_body_mass_dict = {}
+    highest_avg_mass = 0
+    heaviest_species_island = None
     for island, species_dict in data.items(): 
         for species, masses in species_dict.items(): 
             avg_mass = sum(masses) / len(masses)
-            list_tups.append((island, species, int(avg_mass)))
-    return list_tups
+            avg_body_mass_dict[(island, species)] = avg_mass
+
+            if avg_mass > highest_avg_mass:
+                highest_avg_mass = avg_mass
+                heaviest_species_island = (island, species)
+    return avg_body_mass_dict, heaviest_species_island, highest_avg_mass
+
+def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
+    #using above function, calculate flipper-to-average-mass ratio for each penguin (using the above function avg mass) and then using that output, find the sex with the highest flipper-to-average-mass ratio
+
+    # penguins_with_ratio = []
+    # highest_ratio = 0
+    # sex_highest_ratio = None
+
+    # for row in penguins:
+    #     island = row['island']
+    #     species = row['species']
+    #     body_mass = row['body_mass_g']
+    #     flipper_length = row['flipper_length_mm']
+    #     sex = row.get('sex')
+
+
 
 def main(): 
     penguins = load_penguin('penguins.csv')
-    result = calculate_heaviest_species(penguins)
+    result = calculate_average_body_mass_species(penguins)
     print(result)
 
 if __name__ == "__main__": 
