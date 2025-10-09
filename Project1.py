@@ -86,6 +86,11 @@ def calculate_average_body_mass_species(penguins):
     return avg_body_mass_dict, heaviest_species_island, highest_avg_mass
 
 def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
+    '''
+    Calculates the flipper-to-average-mass ratio for each penguin (using the above function avg mass) and then using that output, find the sex with the highest flipper-to-average-mass ratio
+    Input: penguins (list of dicts) and avg_body_mass_dict (dictionary)
+    Output: penguins_with_ratio and sex_highest_ratio
+    '''
     #using above function, calculate flipper-to-average-mass ratio for each penguin (using the above function avg mass) and then using that output, find the sex with the highest flipper-to-average-mass ratio
 
     # penguins_with_ratio = []
@@ -99,7 +104,18 @@ def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
     #     flipper_length = row['flipper_length_mm']
     #     sex = row.get('sex')
 
+    pass
 
+def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_ratio): 
+    '''
+    Analyzes how the average bill-length-depth-mass ratio relates to average body mass across species, island, and sex and compares that to see if its the same sex as highest_ratio (found in calculate_body_ratio)
+    Input: penguins (list of dicts), avg_body_mass_dict (dictionary), sex_highest_ratio
+    Output: Bill_mass_relation (dictionary), sex_match (boolean)
+    '''
+    #heres a start on how to approach avg_mass relation calculation
+    # bill_ratio = bill_length / bill_depth
+    # bill_mass_ratio = bill_ratio / avg_body_mass
+    pass
 
 def main(): 
     penguins = load_penguin('penguins.csv')
