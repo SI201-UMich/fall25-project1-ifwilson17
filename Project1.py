@@ -7,6 +7,13 @@
 # e.g.: 
 # Asked Chatgpt hints for debugging and suggesting the general sturcture of the code
 
+
+
+
+# Topic question: Is there a correlation between sex and penguin body mass?
+# Description: Understand the relation of penguin part size (flipper and beak) to rest of the penguin mass and how it related to sex
+
+
 import os
 import csv 
 
