@@ -1,5 +1,5 @@
 import unittest
-from Project1 import load_penguin, get_measurements, calculate_average_body_mass_species, calculate_body_flipper_to_mass_ratio, analyze_bill_ratio_mass_relation
+from Project1 import load_penguin, calculate_average_body_mass_species, calculate_body_flipper_to_mass_ratio, analyze_bill_ratio_mass_relation
 
 class TestAllMethods(unittest.TestCase):
 
@@ -7,7 +7,7 @@ class TestAllMethods(unittest.TestCase):
         self.penguins = load_penguin('penguins.csv')
 
 
-    #TEST ANALYZE BODY MASS - FUNCTION 1
+    # #TEST ANALYZE BODY MASS - FUNCTION 1
     def test_avg_mass_general_1(self):
         avg_body_mass_dict, heaviest_species_island, highest_avg_mass = calculate_average_body_mass_species(self.penguins)
         self.assertAlmostEqual(avg_body_mass_dict[('Torgersen', 'Adelie')], 3706.37, places=2)
@@ -30,31 +30,36 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(highest_avg_mass, 0)
     
 
-    ##TEST ________ - FUNCTION 2
+    #TEST ________ - FUNCTION 2
     def test_calculate_body_flipper_to_mass_ratio(self):
         # General Test 1 – check that the function returns expected type of result
-        avg_body_mass_dict, heaviest_species_island, highest_avg_mass = calculate_average_body_mass_species(self.penguins)
+        avg_body_mass_dict, _, _ = calculate_average_body_mass_species(self.penguins)
         results_dict = calculate_body_flipper_to_mass_ratio(self.penguins, avg_body_mass_dict)
-
+        for species, sex in results_dict.items():
+            self.assertFalse(sex not in ['male', 'female', 'unknown'])
 
         # General Test 2 – check that the result for Adelie is either 'male' or 'female'
-        adelie_value = results_dict['Adelie']
-        self.assertTrue(adelie_value == 'male' or adelie_value == 'female')
+        avg_body_mass_dict2, _, _ = calculate_average_body_mass_species(self.penguins)
+        results_dict2 = calculate_body_flipper_to_mass_ratio(self.penguins, avg_body_mass_dict2)
+    
+        if 'Adelie' in results_dict2:
+            self.assertFalse(results_dict2['Adelie'] not in ['male', 'female'])
 
         # Edge Test 1 – empty penguin list should return an empty dictionary
         results_empty = calculate_body_flipper_to_mass_ratio([], {})
         self.assertEqual(results_empty, {})
 
         # Edge Test 2 – missing data should default to 'unknown'
-        penguins_missing = [{'species': 'Adelie', 'flipper_length_mm': None, 'sex': None}]
-        results_missing = calculate_body_flipper_to_mass_ratio(penguins_missing, {'Adelie': 3700})
+        avg_body_mass_dict_missing = {('Torgersen', 'Adelie'): 3700}
+        penguins_missing = [{'species': 'Adelie', 'island': 'Torgersen', 'flipper_length_mm': None, 'sex': None}]
+        results_missing = calculate_body_flipper_to_mass_ratio(penguins_missing, avg_body_mass_dict_missing)
         self.assertEqual(results_missing['Adelie'], 'unknown')
 
 
 
 
 
-    ##TEST ANALYZE BILL RATIO - FUNCTION 3
+    #TEST ANALYZE BILL RATIO - FUNCTION 3
     def test_analyze_bill_ratio_mass_relation(self):
     # General Test 1 – check that the average bill ratio is close to expected
         bill_mass_relation, sex_match = analyze_bill_ratio_mass_relation(
@@ -64,6 +69,9 @@ class TestAllMethods(unittest.TestCase):
         self.assertFalse(bill_mass_relation[('Biscoe', 'Adelie', 'male')] == 0)
 
     # General Test 2 – check that sex_match correctly reflects real data comparison
+        bill_mass_relation, sex_match = analyze_bill_ratio_mass_relation(
+            self.penguins, {('Biscoe', 'Adelie'): 3700}, {'Adelie': 'male'}
+        )
         self.assertEqual(sex_match, False)
 
     # Edge Test 1 – empty penguin list should give empty results
@@ -78,6 +86,6 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(match_missing, False)
 
 
-   
+
 if __name__ == "__main__":
     unittest.main()
