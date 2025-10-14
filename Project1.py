@@ -105,45 +105,65 @@ def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
     Input: penguins (list of dicts) and avg_body_mass_dict (dictionary)
     Output: penguins_with_ratio and sex_highest_ratio
     '''
-    #using above function, calculate flipper-to-average-mass ratio for each penguin (using the above function avg mass) and then using that output, find the sex with the highest flipper-to-average-mass ratio
+    penguins_with_ratio = []
 
-    # penguins_with_ratio = []
-    # highest_ratio = 0
-    # sex_highest_ratio = None
+    for penguin in penguins:
+        island = penguin["island"]
+        species = penguin["species"]
 
-    # for row in penguins:
-    #     island = row['island']
-    #     species = row['species']
-    #     body_mass = row['body_mass_g']
-    #     flipper_length = row['flipper_length_mm']
-    #     sex = row.get('sex')
+        if (island, species) not in avg_body_mass_dict:
+            continue
 
-#     create a measurements dict (initially empty)
-# loop through the penguins list
-# .    if penguin's species isnt already in your measurements dict:
-# .        create subdictionary in the format of {"male-ratio": [], "female-ratio": []}
-# .        add species to measurements dict (key: species, value: subdictionary)
-# .    calculate flipper_length / body_mass 
-# .    add that value to the male or female list depending on the sex of this penguin
-# create a results dict (initially empty)
-# loop through measurements dict 
-# .    calculate avg of the male-ratio list
-# .    calculate avg of the female-ratio list
-# .    whichever value is higher, that'll be the sex-with-longer-flippers 
-# .    add these values into the results dict (key: species, value: {"male-ratio": x, "female-ratio": y, "longer-flippers": z})
-# return results dict
+        avg_mass = avg_body_mass_dict[(island, species)]
 
-    pass
+        if penguin["flipper_length_mm"] is not None:
+            flipper_length = penguin["flipper_length_mm"]
+            ratio = flipper_length / avg_mass
+            penguin["ratio"] = ratio
+            penguins_with_ratio.append(penguin)
+
+
+    results_dict = {}
+    for species in avg_body_mass_dict:
+        male_ratios = []
+        female_ratios = []
+
+        for penguin in penguins_with_ratio:
+            if penguin["species"] == species and "sex" in penguin:
+                if penguin["sex"] == "male":
+                    male_ratios.append(penguin["ratio"])
+                elif penguin["sex"] == "female":
+                    female_ratios.append(penguin["ratio"])
+
+        if len(male_ratios) > 0:
+            male_avg = sum(male_ratios) / len(male_ratios)
+        else:
+            male_avg = None
+        if len(female_ratios) > 0:
+            female_avg = sum(female_ratios) / len(female_ratios)
+        else:
+            female_avg = None
+        if male_avg is not None and female_avg is not None:
+            if male_avg > female_avg:
+                results_dict[species] = "male"
+            else:
+                results_dict[species] = "female"
+        elif male_avg is not None:
+            results_dict[species] = "male"
+        elif female_avg is not None:
+            results_dict[species] = "female"
+        else:
+            results_dict[species] = "unknown"  # No data for either sex
+
+    return results_dict
+
 
 def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_ratio): 
     '''
     Analyzes how the average bill-length-depth-mass ratio relates to average body mass across species, island, and sex and compares that to see if its the same sex as highest_ratio (found in calculate_body_ratio)
     Input: penguins (list of dicts), avg_body_mass_dict (dictionary), sex_highest_ratio
-    Output: Bill_mass_relation (dictionary), sex_match (boolean)
+    Output: bill_mass_relation (dictionary), sex_match (boolean)
     '''
-    #heres a start on how to approach avg_mass relation calculation
-    # bill_ratio = bill_length / bill_depth
-    # bill_mass_ratio = bill_ratio / avg_body_mass
     
     # Create an empty dictionary to hold grouped data.
     # The key will be (island, species, sex)
@@ -162,7 +182,7 @@ def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_r
         # (we can't divide by None or zero)
         if None in (island, species, sex, bill_length, bill_depth):
             continue
-    # First calculation finding average bill ratio
+    # CALCULATION 1, finding average bill ratio
     # Calculate the bill ratio (length ÷ depth)
         bill_ratio = bill_length / bill_depth
 
@@ -182,18 +202,85 @@ def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_r
         avg_ratio = sum(ratios) / len(ratios)
         bill_mass_relation[key] = avg_ratio
 
-    # Print results for now so you can see it works (you’ll later return or write to file)
-    print("Average Bill-Length-to-Depth Ratio per (Island, Species, Sex):")
-    for key, avg_ratio in bill_mass_relation.items():
-        print(f"{key}: {avg_ratio:.2f}")
-    
-    # Return the dictionary
-    return bill_mass_relation
+
+    # CALCULATION 2, now we’ll compare the bill ratios to the average body mass
+    # and see if the sex with the highest flipper ratio matches the one with the highest bill ratio.
+
+    # Create a new dictionary to store average bill ratios by species and sex.
+    species_bill_ratio = {}
+
+    # Go through each (island, species, sex) entry in our bill ratio data.
+    for (island, species, sex), ratio in bill_mass_relation.items():
+        # Skip this penguin if sex is missing or invalid
+        if not sex or sex.lower() not in ['male', 'female']:
+            continue
+        # If this species isn’t in our dictionary yet, create it with male/female lists.
+        if species not in species_bill_ratio:
+            species_bill_ratio[species] = {'male': [], 'female': []}
+
+        # Add the ratio value to the correct list (male or female).
+        species_bill_ratio[species][sex.lower()].append(ratio)
+
+    # Make another dictionary to store which sex has the higher average bill ratio.
+    sex_with_highest_bill_ratio = {}
+
+    # Go through each species to find who has the higher average ratio (male or female).
+    for species, sex_data in species_bill_ratio.items():
+        male_ratios = sex_data['male']
+        female_ratios = sex_data['female']
+
+        # Calculate the average for males and females (if data exists).
+        male_avg = sum(male_ratios) / len(male_ratios) if len(male_ratios) > 0 else None
+        female_avg = sum(female_ratios) / len(female_ratios) if len(female_ratios) > 0 else None
+
+        # Compare them to find which sex has the higher average bill ratio.
+        if male_avg is not None and female_avg is not None:
+            # If both have data, pick whichever average is higher.
+            if male_avg > female_avg:
+                sex_with_highest_bill_ratio[species] = "male"
+            else:
+                sex_with_highest_bill_ratio[species] = "female"
+        elif male_avg is not None:
+            # If only male data exists, default to male.
+            sex_with_highest_bill_ratio[species] = "male"
+        elif female_avg is not None:
+            # If only female data exists, default to female.
+            sex_with_highest_bill_ratio[species] = "female"
+        else:
+            # If no data for either sex, mark as unknown.
+            sex_with_highest_bill_ratio[species] = "unknown"
+
+    # Now we compare this to the flipper ratio data (sex_highest_ratio).
+    # We’ll count how many species have the same result for both bill ratio and flipper ratio.
+    matches = 0
+    total_species = 0
+
+    for species, bill_sex in sex_with_highest_bill_ratio.items():
+        if species in sex_highest_ratio:
+            total_species += 1
+            if bill_sex == sex_highest_ratio[species]:
+                # If the sex matches for this species, add to match count.
+                matches += 1
+
+    # If every species matches, or at least one does, mark True.
+    # If none match, mark False.
+    sex_match = matches > 0 and matches == total_species
+
+    # Print everything so you can see the results clearly.
+    print("\n--- Bill Ratio vs Body Mass Relation ---")
+    for species, sex in sex_with_highest_bill_ratio.items():
+        print(f"{species}: Sex with higher average bill ratio = {sex}")
+    print(f"\nDo the highest bill ratio sexes match the flipper ratio sexes? {sex_match}")
+
+    # Return both results so they can be used later or written to a file.
+    return bill_mass_relation, sex_match
     
 
 def main(): 
     penguins = load_penguin('penguins.csv')
-    calculate_average_body_mass_species(penguins)
+    avg_body_mass_dict, heaviest_species_island, highest_avg_mass = calculate_average_body_mass_species(penguins)
+    sex_highest_ratio = calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict)
+    analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_ratio)
 
 if __name__ == "__main__": 
     main() 
