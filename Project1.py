@@ -29,6 +29,7 @@ def load_penguin(csv_file):
     penguins = [] 
     numbered_keys = ['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g']
 
+    #opens the file and turns columns that are numbers into integers
     with open(full_path, newline='') as csv_file: 
         reader = csv.DictReader(csv_file)
         for row in reader: 
@@ -117,6 +118,21 @@ def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
     #     flipper_length = row['flipper_length_mm']
     #     sex = row.get('sex')
 
+#     create a measurements dict (initially empty)
+# loop through the penguins list
+# .    if penguin's species isnt already in your measurements dict:
+# .        create subdictionary in the format of {"male-ratio": [], "female-ratio": []}
+# .        add species to measurements dict (key: species, value: subdictionary)
+# .    calculate flipper_length / body_mass 
+# .    add that value to the male or female list depending on the sex of this penguin
+# create a results dict (initially empty)
+# loop through measurements dict 
+# .    calculate avg of the male-ratio list
+# .    calculate avg of the female-ratio list
+# .    whichever value is higher, that'll be the sex-with-longer-flippers 
+# .    add these values into the results dict (key: species, value: {"male-ratio": x, "female-ratio": y, "longer-flippers": z})
+# return results dict
+
     pass
 
 def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_ratio): 
@@ -128,7 +144,52 @@ def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_r
     #heres a start on how to approach avg_mass relation calculation
     # bill_ratio = bill_length / bill_depth
     # bill_mass_ratio = bill_ratio / avg_body_mass
-    pass
+    
+    # Create an empty dictionary to hold grouped data.
+    # The key will be (island, species, sex)
+    # The value will be a list of all the bill ratios (bill_length / bill_depth)
+    grouped_data = {}
+
+    # Loop through every penguin in the list
+    for row in penguins:
+        island = row['island']
+        species = row['species']
+        sex = row['sex']
+        bill_length = row['bill_length_mm']
+        bill_depth = row['bill_depth_mm']
+    
+    # Skip this penguin if any of the important values are missing
+        # (we can't divide by None or zero)
+        if None in (island, species, sex, bill_length, bill_depth):
+            continue
+    # First calculation finding average bill ratio
+    # Calculate the bill ratio (length ÷ depth)
+        bill_ratio = bill_length / bill_depth
+
+    # Create a unique key for this (island, species, sex) group
+        key = (island, species, sex)
+
+        # Add the bill ratio to the right group in the dictionary
+        if key not in grouped_data:
+            grouped_data[key] = []  # if key not there yet, make a new empty list
+        grouped_data[key].append(bill_ratio)
+
+    # Create a second dictionary to store the average ratio per group
+    bill_mass_relation = {}
+
+    # Loop through each (island, species, sex) key and average its ratios
+    for key, ratios in grouped_data.items():
+        avg_ratio = sum(ratios) / len(ratios)
+        bill_mass_relation[key] = avg_ratio
+
+    # Print results for now so you can see it works (you’ll later return or write to file)
+    print("Average Bill-Length-to-Depth Ratio per (Island, Species, Sex):")
+    for key, avg_ratio in bill_mass_relation.items():
+        print(f"{key}: {avg_ratio:.2f}")
+    
+    # Return the dictionary
+    return bill_mass_relation
+    
 
 def main(): 
     penguins = load_penguin('penguins.csv')
