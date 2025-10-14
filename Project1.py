@@ -45,18 +45,6 @@ def load_penguin(csv_file):
             penguins.append(row)
     return penguins 
 
-def get_measurements(penguins, measurements): 
-    '''
-    Creates a list of integer values for measurements
-    Input: penguins (list of dictionaries), measurements (string)
-    Output: list of integers
-    '''
-    values = []
-    for p in penguins: 
-        val = p.get(measurements)
-        if val is not None: 
-            values.append(val)
-    return values
 
 
 def calculate_average_body_mass_species(penguins): 
