@@ -2,7 +2,7 @@
 # Your name: Isa Wilson
 # Your student id: 8164 2148
 # Your email: ifwilson@umich.edu 
-# Who or what you worked with on this homework (including generative AI like ChatGPT): ChatGPT, Amani Aggour, Rahma Musse - Used ChatGPT for questions for debugging after making a draft of our code
+# Who or what you worked with on this homework (including generative AI like ChatGPT): ChatGPT, Amani Aggour (helped with calculate_body_flipper_to_mass_ratio), Rahma Musse (helped with analyze_bill_ratio_mass_relation) - Used ChatGPT for questions for debugging after making a draft of our code
 # If you worked with generative AI also add a statement for how you used it. 
 # e.g.: 
 # Asked Chatgpt hints for debugging and suggesting the general sturcture of the code
@@ -16,7 +16,7 @@
 import os
 import csv 
 
-def load_penguin(csv_file): 
+def load_penguin(csv_file):
     '''
     Reads the penguin csv file and returns it as a list of dictionaries - coverts keys that have numbered outputs into integers utilizing float to account for decimals
     Input: csv_file(string)
@@ -45,7 +45,7 @@ def load_penguin(csv_file):
     return penguins
 
 
-def calculate_average_body_mass_species(penguins): 
+def calculate_average_body_mass_species(penguins):
     '''
     Grouping the body masses by species and island and finding the averages of each (island, species)
     Input: csv_file(string)
