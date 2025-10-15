@@ -2,11 +2,10 @@
 # Your name: Isa Wilson
 # Your student id: 8164 2148
 # Your email: ifwilson@umich.edu 
-# Who or what you worked with on this homework (including generative AI like ChatGPT): ChatGPT
+# Who or what you worked with on this homework (including generative AI like ChatGPT): ChatGPT, Amani Aggour, Rahma Musse - Used ChatGPT for questions for debugging after making a draft of our code
 # If you worked with generative AI also add a statement for how you used it. 
 # e.g.: 
 # Asked Chatgpt hints for debugging and suggesting the general sturcture of the code
-
 
 
 
@@ -43,8 +42,7 @@ def load_penguin(csv_file):
                 else: 
                     row[key] = None
             penguins.append(row)
-    return penguins 
-
+    return penguins
 
 
 def calculate_average_body_mass_species(penguins): 
@@ -112,7 +110,7 @@ def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
 
 
     results_dict = {}
-    for species in avg_body_mass_dict:
+    for (island, species) in avg_body_mass_dict.keys():
         male_ratios = []
         female_ratios = []
 
@@ -142,9 +140,12 @@ def calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict):
             results_dict[species] = "female"
         else:
             results_dict[species] = "unknown"  # No data for either sex
+            
+        print(f"Sex with highest flipper-to-mass ratio: {results_dict[species]}")
+
+    print("\nFinal results (species: sex):", results_dict)
 
     return results_dict
-
 
 
 def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_ratio): 
@@ -204,7 +205,7 @@ def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_r
         if not sex or sex.lower() not in ['male', 'female']:
             continue
         # If this species isn’t in our dictionary yet, create it with male/female lists.
-        if species not in species_bill_ratio:
+        if (island, species) not in species_bill_ratio:
             species_bill_ratio[species] = {'male': [], 'female': []}
 
         # Add the ratio value to the correct list (male or female).
@@ -264,8 +265,6 @@ def analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_r
     # Return both results so they can be used later or written to a file.
     return bill_mass_relation, sex_match
 
-
-
 def write_results(avg_body_mass_dict, sex_highest_ratio, bill_mass_relation):
     """
     Write all results into a CSV file
@@ -287,15 +286,13 @@ def write_results(avg_body_mass_dict, sex_highest_ratio, bill_mass_relation):
         penguin_writer.writerow(["Island", "Species", "Sex", "Average Bill Ratio"])
         for key, ratio in bill_mass_relation.items():
             penguin_writer.writerow([*key, f"{ratio:.2f}"])
-
-
+    
 
 def main(): 
     penguins = load_penguin('penguins.csv')
     avg_body_mass_dict, heaviest_species_island, highest_avg_mass = calculate_average_body_mass_species(penguins)
     sex_highest_ratio = calculate_body_flipper_to_mass_ratio(penguins, avg_body_mass_dict)
     bill_mass_relation, sex_match = analyze_bill_ratio_mass_relation(penguins, avg_body_mass_dict, sex_highest_ratio)
-    
     write_results(avg_body_mass_dict, sex_highest_ratio, bill_mass_relation)
 
 if __name__ == "__main__": 
