@@ -7,7 +7,7 @@ class TestAllMethods(unittest.TestCase):
         self.penguins = load_penguin('penguins.csv')
 
 
-    # TEST ANALYZE BODY MASS - FUNCTION 1
+    # # TEST ANALYZE BODY MASS - FUNCTION 1
     def test_avg_mass_general_1(self):
         avg_body_mass_dict, heaviest_species_island, highest_avg_mass = calculate_average_body_mass_species(self.penguins)
         self.assertAlmostEqual(avg_body_mass_dict[('Torgersen', 'Adelie')], 3706.37, places=2)
