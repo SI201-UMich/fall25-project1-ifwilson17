@@ -1,0 +1,2 @@
+Description of roles: Throughout this project, I worked with Amani Aggour and Rahma Musse, who helped with the calculate_body_flipper_to_mass_ratio and analyze_bill_ratio_mass_relation function while I worked on the load_penguin, calculate_average_body_mass_species and a bit of the write_results functions.
+Link to the video: https://drive.google.com/file/d/1mnQDkp2PY9itBJhVxqC5A0JrXR5zpebQ/view?usp=share_link
